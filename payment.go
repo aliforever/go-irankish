@@ -33,11 +33,11 @@ func (p *Payment) getTags() (tagsArray []string, err error) {
 		err = errors.New("empty_amount")
 		return
 	}
-	if p.merchantId == "" || p.InvoiceId == "" || p.CallbackUrl == "" {
+	if p.merchantId == "" {
 		err = errors.New("empty_merchant_id")
 		return
 	}
-	if p.InvoiceId == "" || p.CallbackUrl == "" {
+	if p.InvoiceId == "" {
 		err = errors.New("empty_invoice_id")
 		return
 	}

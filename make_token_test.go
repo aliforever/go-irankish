@@ -1,13 +1,13 @@
 package irankish
 
 import (
-	"testing"
 	"fmt"
 	"github.com/kr/pretty"
+	"testing"
 )
 
 func TestIranKish_MakeToken(t *testing.T) {
-	ik := IranKish{MerchantId:"BB00"}
+	ik := IranKish{MerchantId: "BB00"}
 	payment := Payment{}
 	payment.Amount = "20000"
 	payment.InvoiceId = "1"
