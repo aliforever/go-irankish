@@ -9,7 +9,7 @@ import (
 
 	"os"
 
-	"irankish/translation"
+	"github.com/aliforever/go-irankish/translation"
 
 	"github.com/go-errors/errors"
 )
