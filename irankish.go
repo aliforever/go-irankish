@@ -7,6 +7,8 @@ import (
 
 	"github.com/aliforever/go-irankish/file"
 
+	"os"
+
 	"github.com/go-errors/errors"
 )
 
@@ -42,7 +44,8 @@ func (ik *IranKish) MakeToken() (mtr *MakeTokenResult, err error) {
 		return
 	}
 	joinTags := strings.Join(tags, "\n")
-	tokenXML, err := file.GetContents("xml/makeToken.xml")
+	gopath := os.Getenv("GOPATH")
+	tokenXML, err := file.GetContents(gopath + "/src/github.com/aliforever/go-irankish/xml/makeToken.xml")
 	if err != nil {
 		return
 	}
@@ -117,7 +120,8 @@ func (ik *IranKish) VerifyPayment() (vpr *VerifyPaymentResult, err error) {
 		return
 	}
 	joinTags := strings.Join(tags, "\n")
-	verifyPaymentXML, err := file.GetContents("xml/verifyPayment.xml")
+	gopath := os.Getenv("GOPATH")
+	verifyPaymentXML, err := file.GetContents(gopath + "/src/github.com/aliforever/go-irankish/xml/verifyPayment.xml")
 	if err != nil {
 		return
 	}
