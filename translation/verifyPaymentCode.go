@@ -1,6 +1,6 @@
 package translation
 
-var verifyPaymentCodes = map[string]string{
+var VerifyPaymentCodes = map[string]string{
 	"-20": "وجود کاراکترهای غیرمجاز در درخواست",
 	"-30": "تراکنش قبلا برگشت خورده است",
 	"-50": "طول رشته درخواست غیرمجاز است",

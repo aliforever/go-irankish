@@ -9,6 +9,8 @@ import (
 
 	"os"
 
+	"irankish/translation"
+
 	"github.com/go-errors/errors"
 )
 
@@ -163,4 +165,11 @@ func (ik *IranKish) parseVerifyPaymentResult(response string) (vpr *VerifyPaymen
 	verificationResult := response[verificationResultStartTagIndex+len(verificationResultTag[0]) : strings.Index(response, verificationResultTag[1])]
 	vpr.Result = verificationResult
 	return
+}
+
+func (ik *IranKish) ResultMessage(code string) string {
+	if _, ok := translation.CallBackCodes[code]; !ok {
+		return "unknown_error"
+	}
+	return translation.CallBackCodes[code]
 }

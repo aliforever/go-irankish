@@ -1,6 +1,6 @@
 package translation
 
-var callBackCodes = map[string]string{
+var CallBackCodes = map[string]string{
 	"100": "تراکنش با موفقیت انجام شد",
 	"110": "خریدار انصراف داده است",
 	"120": "موجودی کافی نیست",
