@@ -2,9 +2,10 @@ package irankish
 
 import (
 	"io/ioutil"
-	"irankish/file"
 	"net/http"
 	"strings"
+
+	"github.com/aliforever/go-irankish/file"
 
 	"github.com/go-errors/errors"
 )
