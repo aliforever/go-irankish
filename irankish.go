@@ -97,6 +97,7 @@ func (ik *IranKish) parseMakeTokenResult(response string) (mtr *MakeTokenResult,
 		mtr.Result = false
 	}
 	tokenTagBeginIndex := strings.Index(response, tokenTag[0])
+	file.PutContents("make_token_response.html", []byte(response))
 	mtr.Token = strings.TrimSpace(response[tokenTagBeginIndex+len(tokenTag[0]) : strings.Index(response, tokenTag[1])])
 	return
 }
