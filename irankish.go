@@ -7,8 +7,6 @@ import (
 
 	"github.com/aliforever/go-irankish/file"
 
-	"os"
-
 	"github.com/aliforever/go-irankish/translation"
 
 	"github.com/go-errors/errors"
@@ -31,6 +29,28 @@ type VerifyPaymentResult struct {
 	Result string
 }
 
+func (ik *IranKish) makeTokenXML() string {
+	return `<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/">
+    <SOAP-ENV:Body>
+        <ns1:MakeToken>
+            %tags%
+        </ns1:MakeToken>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>`
+}
+
+func (ik *IranKish) verifyPaymentXML() string {
+	return `<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://tempuri.org/">
+    <SOAP-ENV:Body>
+        <ns1:KicccPaymentsVerification>
+            %tags%
+        </ns1:KicccPaymentsVerification>
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>`
+}
+
 func (ik *IranKish) MakeToken() (mtr *MakeTokenResult, err error) {
 	if ik.MerchantId == "" {
 		err = errors.New("empty_merchant_id")
@@ -46,12 +66,14 @@ func (ik *IranKish) MakeToken() (mtr *MakeTokenResult, err error) {
 		return
 	}
 	joinTags := strings.Join(tags, "\n")
-	gopath := os.Getenv("GOPATH")
+	/*gopath := os.Getenv("GOPATH")
+	fmt.Println(gopath + "/src/github.com/aliforever/go-irankish/xml/makeToken.xml")
 	tokenXML, err := file.GetContents(gopath + "/src/github.com/aliforever/go-irankish/xml/makeToken.xml")
 	if err != nil {
 		return
 	}
-	stringXML := string(tokenXML)
+	stringXML := string(tokenXML)*/
+	stringXML := ik.makeTokenXML()
 	finalXML := strings.Replace(stringXML, "%tags%", joinTags, -1)
 	client := http.Client{}
 	request, err := http.NewRequest("POST", makeTokenUrl, strings.NewReader(finalXML))
@@ -123,12 +145,13 @@ func (ik *IranKish) VerifyPayment() (vpr *VerifyPaymentResult, err error) {
 		return
 	}
 	joinTags := strings.Join(tags, "\n")
-	gopath := os.Getenv("GOPATH")
+	/*gopath := os.Getenv("GOPATH")
 	verifyPaymentXML, err := file.GetContents(gopath + "/src/github.com/aliforever/go-irankish/xml/verifyPayment.xml")
 	if err != nil {
 		return
 	}
-	stringXML := string(verifyPaymentXML)
+	stringXML := string(verifyPaymentXML)*/
+	stringXML := ik.verifyPaymentXML()
 	finalXML := strings.Replace(stringXML, "%tags%", joinTags, -1)
 	client := http.Client{}
 	request, err := http.NewRequest("POST", verifyPaymentUrl, strings.NewReader(finalXML))
