@@ -1,8 +1,10 @@
 package irankish
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/aliforever/go-irankish/file"
@@ -66,13 +68,7 @@ func (ik *IranKish) MakeToken() (mtr *MakeTokenResult, err error) {
 		return
 	}
 	joinTags := strings.Join(tags, "\n")
-	/*gopath := os.Getenv("GOPATH")
-	fmt.Println(gopath + "/src/github.com/aliforever/go-irankish/xml/makeToken.xml")
-	tokenXML, err := file.GetContents(gopath + "/src/github.com/aliforever/go-irankish/xml/makeToken.xml")
-	if err != nil {
-		return
-	}
-	stringXML := string(tokenXML)*/
+
 	stringXML := ik.makeTokenXML()
 	finalXML := strings.Replace(stringXML, "%tags%", joinTags, -1)
 	client := http.Client{}
@@ -105,22 +101,28 @@ func (ik *IranKish) parseMakeTokenResult(response string) (mtr *MakeTokenResult,
 		err = errors.New("wrong_response")
 		return
 	}
+	fmt.Println(response)
 	mtr = &MakeTokenResult{}
-	messageTag := []string{"<a:message>", "</a:message>"}
-	resultTag := []string{"<a:result>", "</a:result>"}
-	tokenTag := []string{"<a:token>", "</a:token>"}
-	messageTagBeginIndex := strings.Index(response, messageTag[0])
-	mtr.Message = strings.TrimSpace(response[messageTagBeginIndex+len(messageTag[0]) : strings.Index(response, messageTag[1])])
-	resultTagBeginIndex := strings.Index(response, resultTag[0])
-	boolResult := strings.TrimSpace(response[resultTagBeginIndex+len(resultTag[0]) : strings.Index(response, resultTag[1])])
-	if boolResult == "true" {
-		mtr.Result = true
-	} else {
-		mtr.Result = false
+	messageRegex := regexp.MustCompile(`<a:message.+"/>(.+)</a:message>`)
+	message := messageRegex.FindStringSubmatch(response)
+	if len(message) > 0 {
+		mtr.Message = strings.TrimSpace(message[0])
 	}
-	tokenTagBeginIndex := strings.Index(response, tokenTag[0])
-	file.PutContents("make_token_response.html", []byte(response))
-	mtr.Token = strings.TrimSpace(response[tokenTagBeginIndex+len(tokenTag[0]) : strings.Index(response, tokenTag[1])])
+	resultRegex := regexp.MustCompile(`<a:result>(.+)</a:result>`)
+	result := resultRegex.FindStringSubmatch(response)
+	if len(result) > 0 {
+		if result[0] == "true" {
+			mtr.Result = true
+		} else {
+			mtr.Result = false
+		}
+	}
+	tokenRegex := regexp.MustCompile(`<a:token>(.+)</a:token>`)
+	token := tokenRegex.FindStringSubmatch(response)
+	if len(token) > 0 {
+		mtr.Token = token[0]
+	}
+	//file.PutContents("make_token_response.html", []byte(response))
 	return
 }
 
