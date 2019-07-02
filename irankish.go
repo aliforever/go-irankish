@@ -120,7 +120,7 @@ func (ik *IranKish) parseMakeTokenResult(response string) (mtr *MakeTokenResult,
 	tokenRegex := regexp.MustCompile(`<a:token>(.+)</a:token>`)
 	token := tokenRegex.FindStringSubmatch(response)
 	if len(token) > 0 {
-		mtr.Token = token[0]
+		mtr.Token = token[1]
 	}
 	//file.PutContents("make_token_response.html", []byte(response))
 	return
