@@ -1,14 +1,15 @@
-package irankish
+package tests
 
 import (
 	"fmt"
-	"github.com/kr/pretty"
 	"testing"
+
+	"github.com/aliforever/go-irankish"
 )
 
 func TestIranKish_MakeToken(t *testing.T) {
-	ik := IranKish{MerchantId: "BB00"}
-	payment := Payment{}
+	ik := irankish.IranKish{MerchantId: "BB00"}
+	payment := irankish.Payment{}
 	payment.Amount = "20000"
 	payment.InvoiceId = "1"
 	payment.CallbackUrl = "http://localhost/test/"
@@ -18,5 +19,5 @@ func TestIranKish_MakeToken(t *testing.T) {
 		fmt.Println(err)
 		return
 	}
-	pretty.Println(token)
+	fmt.Println("Token:", token.Token)
 }

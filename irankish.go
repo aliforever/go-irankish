@@ -7,11 +7,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aliforever/go-irankish/file"
-
 	"github.com/aliforever/go-irankish/translation"
 
-	"github.com/go-errors/errors"
+	"errors"
 )
 
 type IranKish struct {
@@ -72,7 +70,11 @@ func (ik *IranKish) MakeToken() (mtr *MakeTokenResult, err error) {
 	stringXML := ik.makeTokenXML()
 	finalXML := strings.Replace(stringXML, "%tags%", joinTags, -1)
 	client := http.Client{}
-	request, err := http.NewRequest("POST", makeTokenUrl, strings.NewReader(finalXML))
+	var request *http.Request
+	request, err = http.NewRequest("POST", makeTokenUrl, strings.NewReader(finalXML))
+	if err != nil {
+		return
+	}
 	request.Header.Add("Host", "ikc.shaparak.ir")
 	request.Header.Add("Connection", "Keep-Alive")
 	request.Header.Add("User-Agent", "PHP-SOAP/5.6.30")
@@ -97,11 +99,9 @@ func (ik *IranKish) MakeToken() (mtr *MakeTokenResult, err error) {
 
 func (ik *IranKish) parseMakeTokenResult(response string) (mtr *MakeTokenResult, err error) {
 	if !strings.Contains(response, "<MakeTokenResult ") {
-		file.PutContents("make_token_response.html", []byte(response))
-		err = errors.New("wrong_response")
+		err = errors.New(fmt.Sprintf("wrong_response => %s", response))
 		return
 	}
-	fmt.Println(response)
 	mtr = &MakeTokenResult{}
 	messageRegex := regexp.MustCompile(`<a:message.+"/>(.+)</a:message>`)
 	message := messageRegex.FindStringSubmatch(response)
@@ -111,7 +111,7 @@ func (ik *IranKish) parseMakeTokenResult(response string) (mtr *MakeTokenResult,
 	resultRegex := regexp.MustCompile(`<a:result>(.+)</a:result>`)
 	result := resultRegex.FindStringSubmatch(response)
 	if len(result) > 0 {
-		if result[0] == "true" {
+		if result[1] == "true" {
 			mtr.Result = true
 		} else {
 			mtr.Result = false
@@ -122,7 +122,6 @@ func (ik *IranKish) parseMakeTokenResult(response string) (mtr *MakeTokenResult,
 	if len(token) > 0 {
 		mtr.Token = token[1]
 	}
-	//file.PutContents("make_token_response.html", []byte(response))
 	return
 }
 
@@ -181,8 +180,7 @@ func (ik *IranKish) VerifyPayment() (vpr *VerifyPaymentResult, err error) {
 
 func (ik *IranKish) parseVerifyPaymentResult(response string) (vpr *VerifyPaymentResult, err error) {
 	if !strings.Contains(response, "<KicccPaymentsVerificationResult>") {
-		file.PutContents("verify_payment_response.html", []byte(response))
-		err = errors.New("wrong_response")
+		err = errors.New(fmt.Sprintf("wrong_response => %s", response))
 		return
 	}
 	vpr = &VerifyPaymentResult{}
